@@ -1,4 +1,4 @@
-package io.samancore.hierarchy.entity;
+package io.samancore.job.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

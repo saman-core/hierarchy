@@ -1,6 +1,6 @@
-package io.samancore.hierarchy.api;
+package io.samancore.app.api;
 
-import io.samancore.hierarchy.util.GraphQueries;
+import io.samancore.app.util.GraphQueries;
 import io.samancore.hierarchy.model.EntityModel;
 import io.samancore.hierarchy.model.RelationshipModel;
 import jakarta.annotation.security.RolesAllowed;
@@ -15,21 +15,35 @@ import java.util.Set;
 public class Api {
 
     @GET
-    @Path("relationships/{entityId}")
+    @Path("entity/{entityId}")
+    @RolesAllowed({"admin"})
+    public EntityModel getEntity(@PathParam("entityId") String entityId) {
+        return GraphQueries.getVertex(entityId);
+    }
+
+    @GET
+    @Path("relationship/{relationshipId}")
+    @RolesAllowed({"admin"})
+    public RelationshipModel getRelationship(@PathParam("relationshipId") String relationshipId) {
+        return GraphQueries.getEdge(relationshipId);
+    }
+
+    @GET
+    @Path("entity/{entityId}/relationships")
     @RolesAllowed({"admin"})
     public List<RelationshipModel> getRelationshipsFromEntity(@PathParam("entityId") String entityId) {
         return GraphQueries.getEdgesFromVertex(entityId);
     }
 
     @GET
-    @Path("target-entity/{relationshipId}")
+    @Path("relationship/{relationshipId}/target-entity")
     @RolesAllowed({"admin"})
     public EntityModel getTargetEntity(@PathParam("relationshipId") String relationshipId) {
         return GraphQueries.getTargetVertex(relationshipId);
     }
 
     @GET
-    @Path("source-entity/{relationshipId}")
+    @Path("relationship/{relationshipId}/source-entity")
     @RolesAllowed({"admin"})
     public EntityModel getSourceEntity(@PathParam("relationshipId") String relationshipId) {
         return GraphQueries.getSourceVertex(relationshipId);

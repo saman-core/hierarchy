@@ -25,22 +25,16 @@
             <version>${hierarchy.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.samancore</groupId>
-            <artifactId>common</artifactId>
-            <version>${common.version}</version>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.samancore</groupId>
-            <artifactId>common-error</artifactId>
-            <version>${common-error.version}</version>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jsonb</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-hibernate-validator</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

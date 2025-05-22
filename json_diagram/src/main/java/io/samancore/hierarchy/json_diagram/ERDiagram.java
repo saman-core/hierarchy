@@ -1,8 +1,7 @@
 package io.samancore.hierarchy.json_diagram;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.samancore.hierarchy.model.Cardinality;
 import io.samancore.hierarchy.model.StateType;
 import lombok.Data;
@@ -10,6 +9,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+@RegisterForReflection
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ERDiagram {
     private List<Cell> cells;
@@ -24,10 +24,7 @@ public class ERDiagram {
         private StateType stateType;
         private Source source;
         private Target target;
-        @JsonProperty("cardinality_source")
         private Cardinality cardinalitySource;
-
-        @JsonProperty("cardinality_target")
         private Cardinality cardinalityTarget;
     }
 

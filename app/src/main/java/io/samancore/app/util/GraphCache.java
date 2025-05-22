@@ -1,4 +1,4 @@
-package io.samancore.hierarchy.util;
+package io.samancore.app.util;
 
 import io.samancore.hierarchy.model.EntityModel;
 import io.samancore.hierarchy.model.RelationshipModel;
