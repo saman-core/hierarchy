@@ -44,10 +44,6 @@ jobs:
           sed -i 's/APP_NAME/${{ env.APP_NAME }}/g' ./kubernetes/deploy-secret.yml
           cat .env >> ./kubernetes/deploy-secret.yml
 
-      - name: Copy jsonfile
-        run: |
-          sed -i -e 's/JSON_DATA/$(base64 product-repository/$(echo $MODULE)/er.json)/g' -e 's/APP_NAME/${{ env.APP_NAME }}/g' ./kubernetes/deploy-json-secret.yml
-
       - name: Set Kubeconfig file and deploy app to K8S
         env:
           BASE64: ${{ secrets.KUBE_CONFIG }}
@@ -56,6 +52,7 @@ jobs:
           export KUBECONFIG=./kubeconfig
           sed -i -e 's/CONTAINER_IMAGE/${{ env.REGISTRY }}\/${{ env.ACTOR }}\/${{ env.IMAGE_APP_NAME }}:${{ github.sha }}/g' -e 's/CONTAINER_JOB_IMAGE/${{ env.REGISTRY }}\/${{ env.ACTOR }}\/${{ env.IMAGE_APP_NAME }}-job:${{ github.sha }}/g' -e 's/APP_VERSION/${{ github.run_number }}/g' -e 's/APP_NAME/${{ env.APP_NAME }}/g' -e 's/DEPLOY_HASH/${{ github.sha }}/g' -e 's/N_REPLICA/${{ env.N_REPLICA }}/g' ./kubernetes/deployment-local.yml
           kubectl apply -f ./kubernetes/deploy-secret.yml -n api --insecure-skip-tls-verify
-          kubectl apply -f ./kubernetes/deploy-json-secret.yml -n api --insecure-skip-tls-verify
+          kubectl delete secret ${{ env.APP_NAME }}-json-secret -n api --insecure-skip-tls-verify || true
+          kubectl create secret generic ${{ env.APP_NAME }}-json-secret --from-file=product-repository/$(echo $MODULE)/er.json -n api --insecure-skip-tls-verify
           kubectl delete -f ./kubernetes/deployment-local.yml -n api --insecure-skip-tls-verify || true
           kubectl apply -f ./kubernetes/deployment-local.yml -n api --insecure-skip-tls-verify
