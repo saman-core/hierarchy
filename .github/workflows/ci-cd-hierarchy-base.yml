@@ -25,10 +25,18 @@ jobs:
           native-image-job-reports: 'true'
           version: '23.1.4.0-Final'
 
+      - name: Set settings.xml
+        env:
+          SETTINGS_XML: ${{ secrets.SETTINGS_XML }}
+          TOKEN: ${{ secrets.GIT_TOKEN }}
+        run: |
+          base64 -d -i <<<$(echo $SETTINGS_XML) > settings.xml
+          sed -i -e 's/OWNER/${{ env.ACTOR }}/g' -e 's/TOKEN/${{ env.TOKEN }}/g' ./settings.xml
+
       - name: Build native app
         run: |
-          ./mvnw clean install
-          ./mvnw -pl app package -Pnative -DskipTests
+          ./mvnw -s ./settings.xml clean install
+          ./mvnw -s ./settings.xml -pl app package -Pnative -DskipTests
 
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
