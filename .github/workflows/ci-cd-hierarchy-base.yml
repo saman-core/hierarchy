@@ -1,4 +1,4 @@
-name: CI-CD-TEMPLATE-BUILDER-LOCAL
+name: CI-CD-HIERARCHY-BASE
 on:
   workflow_dispatch:
 
