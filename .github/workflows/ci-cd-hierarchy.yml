@@ -1,0 +1,60 @@
+name: CI-CD-TEMPLATE-BUILDER-LOCAL
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: 'Module name'
+        required: true
+        type: string
+
+env:
+  MODULE: ${{ inputs.module }}
+  REGISTRY: ghcr.io
+  ACTOR: saman-core
+  IMAGE_APP_NAME: hierarchy
+  APP_NAME: ${{ inputs.module }}-hierarchy
+  N_REPLICA: 1
+
+jobs:
+  build_contenizer:
+    name: Build & Contenerize App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout product-repository
+        uses: actions/checkout@v4
+        with:
+          repository: saman-core/product-repository
+          path: product-repository
+
+      - name: Set Kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Set config file
+        env:
+          BASE64: ${{ secrets.ENV_FILE_LOCAL }}
+        run: |
+          base64 -d -i <<<$(echo $BASE64) >> .env
+          sed -i 's/=/: /' .env
+          sed -i 's/^/  /' .env
+          sed -i 's/APP_NAME/${{ env.APP_NAME }}/g' ./kubernetes/deploy-secret.yml
+          cat .env >> ./kubernetes/deploy-secret.yml
+
+      - name: Copy jsonfile
+        run: |
+          sed -i -e 's/JSON_DATA/$(base64 product-repository/$(echo $MODULE)/er.json)/g' -e 's/APP_NAME/${{ env.APP_NAME }}/g' ./kubernetes/deploy-json-secret.yml
+
+      - name: Set Kubeconfig file and deploy app to K8S
+        env:
+          BASE64: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          base64 -d -i <<<$(echo $BASE64) > ./kubeconfig
+          export KUBECONFIG=./kubeconfig
+          sed -i -e 's/CONTAINER_IMAGE/${{ env.REGISTRY }}\/${{ env.ACTOR }}\/${{ env.IMAGE_APP_NAME }}:${{ github.sha }}/g' -e 's/CONTAINER_JOB_IMAGE/${{ env.REGISTRY }}\/${{ env.ACTOR }}\/${{ env.IMAGE_APP_NAME }}-job:${{ github.sha }}/g' -e 's/APP_VERSION/${{ github.run_number }}/g' -e 's/APP_NAME/${{ env.APP_NAME }}/g' -e 's/DEPLOY_HASH/${{ github.sha }}/g' -e 's/N_REPLICA/${{ env.N_REPLICA }}/g' ./kubernetes/deployment-local.yml
+          kubectl apply -f ./kubernetes/deploy-secret.yml -n api --insecure-skip-tls-verify
+          kubectl apply -f ./kubernetes/deploy-json-secret.yml -n api --insecure-skip-tls-verify
+          kubectl delete -f ./kubernetes/deployment-local.yml -n api --insecure-skip-tls-verify || true
+          kubectl apply -f ./kubernetes/deployment-local.yml -n api --insecure-skip-tls-verify

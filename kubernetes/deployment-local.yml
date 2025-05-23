@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-        - image: CONTAINER_IMAGE-job
+        - image: CONTAINER_JOB_IMAGE
           envFrom:
             - configMapRef:
                 name: APP_NAME-deploy-secret
