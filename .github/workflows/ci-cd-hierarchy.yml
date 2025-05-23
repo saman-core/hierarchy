@@ -40,6 +40,7 @@ jobs:
           base64 -d -i <<<$(echo $BASE64) >> .env
           sed -i 's/=/: /' .env
           sed -i 's/^/  /' .env
+          sed -i 's/MODULE_NAME/$(echo $MODULE)/' .env
           sed -i 's/APP_NAME/${{ env.APP_NAME }}/g' ./kubernetes/deploy-secret.yml
           cat .env >> ./kubernetes/deploy-secret.yml
 

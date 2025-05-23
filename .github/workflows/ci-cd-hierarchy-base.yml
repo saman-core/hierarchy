@@ -16,6 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set env
+        env:
+          BASE64: ${{ secrets.ENV_FILE }}
+        run: |
+          base64 -d -i <<<$(echo $BASE64) > .env
+
       - name: Setup graalvm
         uses: graalvm/setup-graalvm@v1
         with:
