@@ -35,7 +35,7 @@ jobs:
 
       - name: Set config file
         env:
-          BASE64: ${{ secrets.ENV_FILE_LOCAL }}
+          BASE64: ${{ secrets.ENV_FILE }}
         run: |
           base64 -d -i <<<$(echo $BASE64) >> .env
           sed -i 's/=/: /' .env
